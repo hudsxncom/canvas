@@ -1,0 +1,47 @@
+name: Publish to Composer
+
+# Run this workflow on tag pushes
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Only trigger on semantic version tags, e.g., v1.2.3
+
+jobs:
+  publish:
+    name: Publish Package
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout the repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Set up PHP environment
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'    # Adjust to your PHP version
+          tools: composer
+
+      # 3. Install Composer dependencies
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      # 4. Validate composer.json (optional, but recommended)
+      - name: Validate composer.json
+        run: composer validate --no-interaction --strict
+
+      # 5. Trigger Packagist update
+      - name: Publish to Packagist
+        env:
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+          PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
+          REPO_URL: https://github.com/${{ github.repository }}
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d "{\"repository\":{\"url\":\"${REPO_URL}\"}}" \
+            "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_API_TOKEN}"
+
+      # 6. Optional: Tag confirmation
+      - name: Confirm published version
+        run: echo "Published tag ${{ github.ref }} to Packagist"
