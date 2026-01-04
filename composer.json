@@ -1,0 +1,23 @@
+{
+    "name": "hudsxn/canvas",
+    "description": "A simple page builder API that is agnostic of frameworks, and can be used for CSR or SSR",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hudsxn\\Canvas\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "hudsxn"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require-dev": {
+        "phpunit/phpunit": "10.1"
+    },
+    "scripts": {
+        "test": ".\\vendor\\bin\\phpunit"
+    }
+}
